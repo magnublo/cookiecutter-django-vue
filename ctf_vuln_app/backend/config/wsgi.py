@@ -7,7 +7,6 @@ named ``application``. Django's ``runserver`` and ``runfcgi`` commands discover
 this application via the ``WSGI_APPLICATION`` setting.
 """
 
-from raven.contrib.django.raven_compat.middleware.wsgi import Sentry
 import os
 import sys
 
@@ -25,7 +24,3 @@ sys.path.append(os.path.join(current_path, 'apps'))
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 application = get_wsgi_application()
-
-{ % if cookiecutter.use_sentry == 'y' - %}
-application = Sentry(application)
-{ % endif % }

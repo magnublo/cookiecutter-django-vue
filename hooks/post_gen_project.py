@@ -17,8 +17,18 @@ def set_secret_key():
     with open(os.path.join(PROJECT_DIRECTORY, 'env.example')) as f:
         file_ = f.read()
 
-    punctuation = string.punctuation.replace('"', '').replace("'", '').replace('\\', '')
-    secret = ''.join(random.choice(string.digits + string.ascii_letters + punctuation) for i in range(50))
+    punctuation = string.punctuation.replace(
+        '"',
+        '').replace(
+        "'",
+        '').replace(
+            '\\',
+        '')
+    secret = ''.join(
+        random.choice(
+            string.digits +
+            string.ascii_letters +
+            punctuation) for i in range(50))
     file_ = file_.replace('CHANGEME!!!', secret, 1)
 
     # Write the results
@@ -28,7 +38,13 @@ def set_secret_key():
 
 def rename_env_file():
     """ Renames env file """
-    os.rename(os.path.join(PROJECT_DIRECTORY, 'env.example'), os.path.join(PROJECT_DIRECTORY, '.env'))
+    os.rename(
+        os.path.join(
+            PROJECT_DIRECTORY,
+            'env.example'),
+        os.path.join(
+            PROJECT_DIRECTORY,
+            '.env'))
 
 
 def delete_api_files():
@@ -48,7 +64,7 @@ def delete_api_files():
             'backend/apps/users/serializers.py',
         ]
         shutil.rmtree(os.path.join(PROJECT_DIRECTORY, 'frontend/src/store'))
-    
+
     for filename in files:
         os.remove(os.path.join(PROJECT_DIRECTORY, filename))
 

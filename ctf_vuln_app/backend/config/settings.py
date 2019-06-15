@@ -1,5 +1,5 @@
 """
-Django settings for {{ cookiecutter.project_name }} project.
+Django settings for CTF vulnerable application project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -27,11 +27,9 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    {% if cookiecutter.api == 'REST' % }
+
     'rest_framework',
-    {% elif cookiecutter.api == 'GraphQL' % }
-    'graphene_django',
-    {% endif % }
+
     'django_extensions',
 ]
 
@@ -50,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    { % if cookiecutter.api == 'GraphQL' % }'graphql_jwt.middleware.JSONWebTokenMiddleware', { % endif % }
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -74,7 +72,7 @@ EMAIL_HOST = env.str('EMAIL_HOST', default='mailhog')
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [
-    ('{{ cookiecutter.author }}', '{{ cookiecutter.email }}'),
+    ('Magnus Longva', 'mail@mail.mail'),
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
@@ -202,7 +200,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # AUTHENTICATION CONFIGURATION
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = [
-    { % if cookiecutter.api == 'GraphQL' % }'graphql_jwt.backends.JSONWebTokenBackend', { % endif % }
+
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -211,7 +209,6 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = 'users.User'
 
 
-{% if cookiecutter.api == 'REST' % }
 # DJANGO REST FRAMEWORK
 # ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
@@ -228,83 +225,3 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FileUploadParser'
     ]
 }
-{% elif cookiecutter.api == 'GraphQL' % }
-# Graphene
-GRAPHENE = {
-    'SCHEMA': 'config.schema.schema',
-}
-
-if DEBUG:
-    GRAPHENE['MIDDLEWARE'] = ['graphene_django.debug.DjangoDebugMiddleware']
-
-GRAPHQL_JWT = {
-    'JWT_EXPIRATION_DELTA': timedelta(days=30),
-    'JWT_AUTH_HEADER': 'authorization',
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-}
-{% endif % }
-
-
-{% if cookiecutter.use_sentry == 'y' % }
-# raven sentry client
-# See https://docs.sentry.io/clients/python/integrations/django/
-INSTALLED_APPS += ['raven.contrib.django.raven_compat']
-RAVEN_MIDDLEWARE = [
-    'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware']
-MIDDLEWARE = RAVEN_MIDDLEWARE + MIDDLEWARE
-
-# Sentry Configuration
-SENTRY_DSN = env.str('SENTRY_DSN')
-SENTRY_CLIENT = 'raven.contrib.django.raven_compat.DjangoClient'
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'root': {
-        'level': 'WARNING',
-        'handlers': ['sentry'],
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s '
-                      '%(process)d %(thread)d %(message)s'
-        },
-    },
-    'handlers': {
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'ERROR',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'raven': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'sentry.errors': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
-        },
-        'django.security.DisallowedHost': {
-            'level': 'ERROR',
-            'handlers': ['console', 'sentry'],
-            'propagate': False,
-        },
-    },
-}
-
-RAVEN_CONFIG = {
-    'DSN': SENTRY_DSN
-}
-{% endif % }
